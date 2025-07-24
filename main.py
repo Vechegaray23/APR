@@ -17,7 +17,7 @@ async def voice():
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <!-- 1) Saludo con TTS nativo de Twilio -->
-  <Say voice="es-US-Chirp3-HD-Charon">
+  <Say language="es-US" voice="es-US-Chirp3-HD-Charon">
     Hola, bienvenido. Por favor, dime lo que desees grabar.
   </Say>
 
