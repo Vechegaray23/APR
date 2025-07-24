@@ -25,7 +25,7 @@ async def voice():
     maxLength="120"
     transcribe="true"
     recordingTrack="both_tracks"
-    transcribeLanguage="es-CL"
+    transcribeLanguage="es-US"
   />
 
   <Say language="es-US" voice="es-US-Chirp3-HD-Charon">
