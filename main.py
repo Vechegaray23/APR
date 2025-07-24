@@ -2,9 +2,19 @@ import os
 from fastapi import FastAPI, Response
 
 app = FastAPI()
+@app.on_event("startup")
+async def on_startup():
+    print("🚀 FastAPI arrancada correctamente")
+  
+@app.get("/health")
+async def health():
+    print("🩺 /health invocado")
+    return {"status":"ok"}
 
 @app.post("/voice")
 async def voice():
+    print("📞 /voice invocado por Twilio")
+
     # TwiML que saluda, graba la llamada y pide transcripción
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
