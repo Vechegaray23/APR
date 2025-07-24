@@ -14,8 +14,7 @@ async def voice():
     print("📞 /voice invocado por Twilio")
 
     # TwiML que saluda, graba la llamada y pide transcripción
-    twiml = """
-<?xml version="1.0" encoding="UTF-8"?>
+    twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say language="es-US" voice="es-US-Chirp3-HD-Charon">
     Hola, bienvenido. Por favor, dime lo que desees grabar.
