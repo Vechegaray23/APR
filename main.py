@@ -2,9 +2,7 @@ import os
 from fastapi import FastAPI, Response
 
 app = FastAPI()
-@app.on_event("startup")
-async def on_startup():
-    print("🚀 FastAPI arrancada correctamente")
+
   
 @app.get("/health")
 async def health():
