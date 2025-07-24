@@ -1,34 +1,52 @@
-import os
-from fastapi import FastAPI, Response
+# main.py
+from fastapi import FastAPI, Request, Response
 
 app = FastAPI()
 
-  
 @app.get("/health")
 async def health():
-    print("🩺 /health invocado")
-    return {"status":"ok"}
+    return {"status": "ok"}
 
 @app.post("/voice")
 async def voice():
-    print("📞 /voice invocado por Twilio")
-
-    # TwiML que saluda, graba la llamada y pide transcripción
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say language="es-US" voice="es-US-Chirp3-HD-Charon">
-    Hola, bienvenido. Por favor, dime lo que desees grabar.
+  <!-- 1) Saludo inicial con TTS en español -->
+  <Say voice="alice" language="es-CL">
+    Hola, por favor dime lo que quieras decir y lo transcribiré.
   </Say>
 
-  <Record
-    maxLength="120"
-    transcribe="true"
-    recordingTrack="both_tracks"
-    transcribeLanguage="es-US"  />
-
-  <Say language="es-US" voice="es-US-Chirp3-HD-Charon">
-    Gracias por tu grabación. Adiós.
+  <!-- 2) Recoge la voz del usuario y envía la transcripción a /transcription -->
+  <Gather
+    input="speech"
+    language="es-CL"
+    speechTimeout="auto"
+    action="/transcription"
+    method="POST"
+  />
+  
+  <!-- 3) Si no se detecta voz, se despide -->
+  <Say voice="alice" language="es-CL">
+    No te escuché bien. Adiós.
   </Say>
-</Response>
-"""
+  <Hangup/>
+</Response>"""
+    return Response(content=twiml, media_type="text/xml")
+
+
+@app.post("/transcription")
+async def transcription(request: Request):
+    form = await request.form()
+    call_sid = form.get("CallSid", "unknown")
+    text = form.get("SpeechResult", "")
+    print(f"[{call_sid}] Transcripción final: {text}")
+
+    # Respuesta final: te agradece y cuelga
+    twiml = """<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice" language="es-CL">
+    Gracias, adiós.
+  </Say>
+  <Hangup/>
+</Response>"""
     return Response(content=twiml, media_type="text/xml")
