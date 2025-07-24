@@ -1,3 +1,7 @@
+# main.py
+from fastapi import FastAPI, Request, Response
+
+app = FastAPI()
 @app.post("/voice")
 async def voice():
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
