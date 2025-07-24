@@ -12,21 +12,21 @@ async def voice():
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <!-- 1) Saludo inicial con TTS en español -->
-  <Say voice="alice" language="es-CL">
+  <Say voice="Andres-Generative" language="es-MX">
     Hola, por favor dime lo que quieras decir y lo transcribiré.
   </Say>
 
   <!-- 2) Recoge la voz del usuario y envía la transcripción a /transcription -->
   <Gather
     input="speech"
-    language="es-CL"
+    language="es-US"
     speechTimeout="auto"
     action="/transcription"
     method="POST"
   />
   
   <!-- 3) Si no se detecta voz, se despide -->
-  <Say voice="alice" language="es-CL">
+  <Say voice="Andres-Generative" language="es-MX">
     No te escuché bien. Adiós.
   </Say>
   <Hangup/>
