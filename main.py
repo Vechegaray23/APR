@@ -1,38 +1,80 @@
+
 # main.py
 from fastapi import FastAPI, Request, Response
 
 app = FastAPI()
 
-# Este es el endpoint que Twilio llamará al inicio de la llamada
 @app.post("/voice")
 async def voice():
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="Pedro-Neural" language="es-US">
-    Hola, bienvenido.
+  <Say voice="alice" language="es-CL">
+    Hola, bienvenido. Por favor, dime tu nombre.
   </Say>
-  <Start>
-    <Transcription
-      statusCallbackUrl="https://apr-production.up.railway.app/transcription-log"
-      language="en-US"
-    />
-  </Start>
-  <Pause length="8" /> <Say voice="alice" language="es-US">
-    Hemos terminado de transcribir. Gracias.
-  </Say>
+  <Record
+    maxLength="10"
+    transcribe="true"
+    transcribeLanguage="es-US"  action="https://apr-production.up.railway.app/process-name" />
 </Response>"""
     return Response(content=twiml, media_type="text/xml")
 
-# Este es el endpoint que recibirá las transcripciones en tiempo real
-# Lo hemos llamado '/transcription-log' para reflejar su propósito de solo loguear
-@app.post("/transcription-log")
-async def transcription_log(request: Request):
+@app.post("/process-name")
+async def process_name(request: Request):
     form_data = await request.form()
+    
+    recording_url = form_data.get("RecordingUrl")
+    transcription_text = form_data.get("TranscriptionText") # ¡Aquí obtienes la transcripción!
+    call_sid = form_data.get("CallSid")
 
-    print(f"--- Datos completos recibidos de Twilio para Call SID: {form_data.get('CallSid')} ---")
-    for key, value in form_data.items():
-        print(f"{key}: {value}")
+    print(f"--- Grabación Finalizada (Call SID: {call_sid}) ---")
+    print(f"URL Grabación: {recording_url}")
+    if transcription_text:
+        print(f"Transcripción: {transcription_text}")
+    else:
+        print("Transcripción no disponible o error.")
     print("---------------------------------------------------\n")
 
-    # Devuelve un 200 OK
-    return Response(content="", status_code=200)
+    # Ahora, puedes responder con más TwiML para continuar la llamada
+    if transcription_text and "juan" in transcription_text.lower():
+        next_twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice" language="es-CL">
+    Hola Juan, ¿en qué más puedo ayudarte hoy?
+  </Say>
+</Response>"""
+    else:
+        next_twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice" language="es-CL">
+    Gracias por tu respuesta. Dime, ¿cuál es el motivo de tu llamada?
+  </Say>
+  <Record
+    maxLength="20"
+    transcribe="true"
+    transcribeLanguage="es-US"
+    action="https://apr-production.up.railway.app/process-reason"
+  />
+</Response>"""
+        
+    return Response(content=next_twiml, media_type="text/xml")
+
+# Puedes tener más endpoints para cada paso de la conversación
+@app.post("/process-reason")
+async def process_reason(request: Request):
+    form_data = await request.form()
+    transcription_text = form_data.get("TranscriptionText")
+    call_sid = form_data.get("CallSid")
+
+    print(f"--- Motivo de Llamada (Call SID: {call_sid}) ---")
+    if transcription_text:
+        print(f"Motivo: {transcription_text}")
+    print("---------------------------------------------------\n")
+
+    final_twiml = """<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice" language="es-CL">
+    Gracias. Hemos registrado tu solicitud. Adiós.
+  </Say>
+  <Hangup/>
+</Response>"""
+    return Response(content=final_twiml, media_type="text/xml")
