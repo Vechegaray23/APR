@@ -8,7 +8,7 @@ app = FastAPI()
 async def voice():
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="alice" language="es-US">
+  <Say voice="Pedro-Neural" language="es-US">
     Hola, bienvenido.
   </Say>
   <Start>
@@ -28,18 +28,11 @@ async def voice():
 @app.post("/transcription-log")
 async def transcription_log(request: Request):
     form_data = await request.form()
-    
-    # Extraemos solo lo que nos interesa ver
-    transcription_status = form_data.get("TranscriptionStatus")
-    transcription_text = form_data.get("TranscriptionText")
-    call_sid = form_data.get("CallSid")
-    
-    # Imprimimos en la consola/logs
-    print(f"--- Transcripción en vivo para Call SID: {call_sid} ---")
-    print(f"Estado: {transcription_status}")
-    if transcription_text: # Solo imprimimos el texto si existe
-        print(f"Texto: {transcription_text}")
-    print("---------------------------------------------------\n") # Espacio para mayor claridad en los logs
 
-    # Siempre devuelve un 200 OK
+    print(f"--- Datos completos recibidos de Twilio para Call SID: {form_data.get('CallSid')} ---")
+    for key, value in form_data.items():
+        print(f"{key}: {value}")
+    print("---------------------------------------------------\n")
+
+    # Devuelve un 200 OK
     return Response(content="", status_code=200)
