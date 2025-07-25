@@ -14,7 +14,9 @@ async def voice():
   <Start>
     <Transcription
       statusCallbackUrl="https://apr-production.up.railway.app/transcription-log"
-      language="es-US"
+      language="es-CL"
+      speech_model='telephony_short'
+      transcription_engine='google'
     />
   </Start>
   <Pause length="8" /> <Say voice="alice" language="es-US">
