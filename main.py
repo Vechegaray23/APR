@@ -8,16 +8,18 @@ app = FastAPI()
 async def voice():
     twiml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="alice" language="es-CL">
+  <Say voice="alice" language="es-US">
     Hola, bienvenido.
   </Say>
   <Start>
     <Transcription
       statusCallbackUrl="https://apr-production.up.railway.app/transcription-log"
+      speech_model='telephony'
+      transcription_engine='google'
       language="es-US"
     />
   </Start>
-  <Pause length="8" /> <Say voice="alice" language="es-CL">
+  <Pause length="8" /> <Say voice="alice" language="es-US">
     Hemos terminado de transcribir. Gracias.
   </Say>
 </Response>"""
